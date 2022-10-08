@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -27,13 +28,31 @@ type URLforDown struct {
 	Templated bool   `json:"templated"`
 }
 
+var YandexDiskToken = os.Getenv("TOKENYD")
+
 func main() {
-	GetURLForUpload()
-	GetUrlForDownload()
+	fmt.Println("Выполняю")
+	upload := flag.Bool("upload", false, "Upload file")
+	download := flag.Bool("download", false, "Download file")
+	flag.Parse()
+	if *upload == true {
+		GetURLForUpload()
+		fmt.Println("Upload done")
+	} else {
+		fmt.Println("Загрузка не начата")
+
+	}
+	if *download == true {
+		GetUrlForDownload()
+		fmt.Println("Download done")
+	} else {
+		fmt.Println("Скачивание не начато")
+	}
+	//GetURLForUpload()
+	//GetUrlForDownload()
 }
 
 func GetURLForUpload() {
-	YandexDiskToken := os.Getenv("TOKEN")
 	FileName := "красивый лес.jpeg"
 	url := "https://cloud-api.yandex.net/v1/disk/resources/upload?path=/" + FileName
 	method := "GET"
@@ -114,7 +133,6 @@ func UpLoadFileOnDisk(urlHref string) {
 	fmt.Println(string(body))
 }
 func GetUrlForDownload() {
-	YandexDiskToken := os.Getenv("TOKEN")
 	DiskFilePath := "/красивый лес.jpeg"
 	url := "https://cloud-api.yandex.net/v1/disk/resources/download?path=" + url2.QueryEscape(DiskFilePath)
 	fmt.Println(url)
@@ -160,7 +178,6 @@ func DownloadOnPC(urlHref string) {
 		fmt.Println(err)
 		return
 	}
-	req.Header.Add("Cookie", "yandexuid=369435711663506784")
 
 	res, err := client.Do(req)
 	if err != nil {
